@@ -90,7 +90,7 @@ public class FenceService {
                     andParam.add(cb.like(root.join("fenceMap").get("mapCpaName"), "%" + mapCpaName + "%"));
                 }
                 return cb.and(andParam.toArray(new Predicate[0]));
-//                return cb.and(andParam.toArray(new Predicate[andParam.size()]));
+//                return cb.and(andParam.toArray(new Predicate[andParam.size()]));
             };
             listPage = fenceEntityRepository.findAll(spec, pageRequest);
         } else {
@@ -111,7 +111,8 @@ public class FenceService {
         if (fenceDTO.getFenceType() == null) {
             throw new BaseException("围栏类型不能为空").setStrCode(Constants.ERR_1502);
         }
-        var polygon = fenceDTO.covertXyListToPolygon();
+        // 注意：FenceDTO中的 covertXyListToPolygon() 包含了边界校验逻辑，无需在此重复
+        var polygon = fenceDTO.covertXyListToPolygon(); 
         var mapEntity = mapEntityRepository.findById(fenceDTO.getFenceMap().getMapId()).orElse(null);
         if (mapEntity == null) {
             throw new BaseException("围栏所属地图不能为空").setStrCode(Constants.ERR_1501);
@@ -128,6 +129,15 @@ public class FenceService {
                 throw new BaseException("围栏信息未找到").setStrCode(Constants.ERR_1503);
             }
         }
+        
+        // ==========================================================
+        // DTO 到 Entity 的属性映射：新增的商品区域属性
+        // ==========================================================
+        fence.setObjectName(fenceDTO.getObjectName());
+        fence.setBelongType(fenceDTO.getBelongType());
+        fence.setIconUrl(fenceDTO.getIconUrl());
+        // ==========================================================
+        
         fence.setFenceName(fenceDTO.getFenceName());
         fence.setFenceType(fenceDTO.getFenceType());
         fence.setFenceContent(polygon);

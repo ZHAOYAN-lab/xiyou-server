@@ -25,6 +25,14 @@ public class FenceWithoutMapDTO {
     private Short fenceType;
     private Boolean fenceStatus;
     private List<Pxy> fenceContent;
+    
+    // ==========================================================
+    // 新增字段用于存储商品区域信息 (与 FenceDTO 保持同步)
+    // ==========================================================
+    private String objectName;  // 对象名称 
+    private String belongType;  // 所属类型 
+    private String iconUrl;     // 图标URL
+    // ==========================================================
 
     public static List<FenceWithoutMapDTO> covert(Collection<FenceEntity> list) {
         List<FenceWithoutMapDTO> result = new ArrayList<>();
@@ -42,6 +50,12 @@ public class FenceWithoutMapDTO {
         this.fenceType = fenceEntity.getFenceType();
         this.fenceStatus = fenceEntity.getFenceStatus();
         this.fenceContent = Pxy.covert(fenceEntity.getFenceContent().getCoordinates());
+        
+        // 映射新的字段 (假设 FenceEntity 也添加了对应的 getter)
+        // 注意：由于没有 FenceEntity 代码，这里只是假设其存在并映射。
+        // this.objectName = fenceEntity.getObjectName(); 
+        // this.belongType = fenceEntity.getBelongType(); 
+        // this.iconUrl = fenceEntity.getIconUrl();
     }
 
     public boolean fenceContainPoint(double x, double y) throws Exception {
@@ -53,7 +67,7 @@ public class FenceWithoutMapDTO {
             throw new BaseException("围栏需要是一个封闭图形").setStrCode(Constants.ERR_1504);
         }
         Coordinate[] coordinates = Pxy.covertToCoordinateArray(getFenceContent());
-//        //必须首尾坐标点相同组成闭合多边形
+//        //必须首尾坐标点相同组成闭合多边形
         if (!(coordinates[0].equals2D(coordinates[coordinates.length - 1]))) {
             throw new BaseException("围栏需要是一个封闭图形").setStrCode(Constants.ERR_1504);
         }
@@ -66,6 +80,4 @@ public class FenceWithoutMapDTO {
         }
         return fenceContent;
     }
-
-
 }

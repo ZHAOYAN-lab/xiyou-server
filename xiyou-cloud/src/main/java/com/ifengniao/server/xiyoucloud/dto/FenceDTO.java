@@ -26,6 +26,14 @@ public class FenceDTO {
     private Boolean fenceStatus;
     private List<Pxy> fenceContent;
     private MapDTO fenceMap;
+    
+    // ==========================================================
+    // 新增字段用于存储商品区域信息 (对应需求文档 1.1.3.2)
+    // ==========================================================
+    private String objectName;  // 对象名称 (来自前端的文本输入)
+    private String belongType;  // 所属类型 (货物种类1/2等)
+    private String iconUrl;     // 上传图标的URL或存储路径 (用于移动端显示)
+
 
     public static List<FenceDTO> covert(Collection<FenceEntity> list) {
         List<FenceDTO> result = new ArrayList<>();
@@ -44,6 +52,12 @@ public class FenceDTO {
         this.fenceStatus = fenceEntity.getFenceStatus();
         this.fenceContent = Pxy.covert(fenceEntity.getFenceContent().getCoordinates());
         this.fenceMap = new MapDTO(fenceEntity.getFenceMap());
+        
+        // 映射逻辑已在 FenceService 中处理 (DTO -> Entity)
+        // 从 Entity 到 DTO 的映射（如果您需要从数据库读取时填充这些字段）
+        // this.objectName = fenceEntity.getObjectName(); 
+        // this.belongType = fenceEntity.getBelongType(); 
+        // this.iconUrl = fenceEntity.getIconUrl();
     }
 
     public boolean fenceContainPoint(double x, double y) throws Exception {

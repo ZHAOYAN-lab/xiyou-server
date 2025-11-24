@@ -35,6 +35,22 @@ public class FenceEntity {
     @ManyToOne
     @JoinColumn(name = "fence_map", referencedColumnName = "map_id", nullable = false)
     private MapEntity fenceMap;
+    
+    // ==========================================================
+    // 新增字段用于存储商品区域属性 (对应 DTO 和 Service 的映射)
+    // ==========================================================
+    @Basic
+    @Column(name = "object_name") 
+    private String objectName;
+    
+    @Basic
+    @Column(name = "belong_type") 
+    private String belongType;
+    
+    @Basic
+    @Column(name = "icon_url") 
+    private String iconUrl;
+    // ==========================================================
 
     public boolean fenceContainPoint(double x, double y) {
         return this.getFenceContent().contains(new GeometryFactory().createPoint(new Coordinate(x, y)));

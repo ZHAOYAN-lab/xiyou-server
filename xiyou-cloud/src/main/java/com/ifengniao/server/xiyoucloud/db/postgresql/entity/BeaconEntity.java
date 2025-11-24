@@ -25,10 +25,6 @@ public class BeaconEntity {
     @Column(name = "beacon_mac")
     private String beaconMac;
 
-    // ✅ 新增字段，对应数据库中的 beacon_unique_id
-    @Basic
-    @Column(name = "beacon_unique_id")
-    private String beaconUniqueId;
 
     @Basic
     @Column(name = "beacon_x")
@@ -133,7 +129,6 @@ public class BeaconEntity {
     public BeaconEntity init() {
         this.beaconId = null;
         this.beaconMac = "";
-        this.beaconUniqueId = "";   // ✅ 初始化 uniqueId
         this.beaconX = "";
         this.beaconY = "";
         this.beaconZ = "";
