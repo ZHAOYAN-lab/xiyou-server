@@ -59,14 +59,13 @@ public class FenceController {
 
 
     /**
-     * 新增/修改围栏信息 (包含新增的商品区域属性)
+     * 新增/修改围栏信息
      *
      * @return
      */
-    @Operation(summary = "新增/修改围栏信息 (含商品区域属性)") // 仅修改了 Operation 描述
+    @Operation(summary = "新增/修改围栏信息")
     @PostMapping("/edit")
     public ResultMsg edit(@RequestBody FenceDTO fenceDTO) {
-        // 由于 Spring 框架会自动将请求体 JSON 映射到 FenceDTO，所以无需修改内部代码
         return Resp.exec(() -> new FenceDTO(fenceService.saveOrUpdateFence(fenceDTO)));
     }
 
