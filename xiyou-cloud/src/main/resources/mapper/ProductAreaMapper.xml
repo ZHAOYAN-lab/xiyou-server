@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ifengniao.server.xiyoucloud.mapper.ProductAreaMapper">
+
+    <!-- 新增区域 -->
+    <insert id="add" parameterType="com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity">
+        INSERT INTO xy_product_area (
+            object_name,
+            belong_type,
+            icon_url,
+            map_ids,
+            create_time,
+            update_time
+        )
+        VALUES (
+            #{objectName},
+            #{belongType},
+            #{iconUrl},
+            #{mapIds},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 查询区域列表 -->
+    <select id="list" resultType="com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity">
+        SELECT
+            area_id AS areaId,
+            object_name AS objectName,
+            belong_type AS belongType,
+            icon_url AS iconUrl,
+            map_ids AS mapIds,
+            create_time AS createTime,
+            update_time AS updateTime
+        FROM xy_product_area
+        ORDER BY area_id DESC
+    </select>
+
+    <!-- 修改区域 -->
+    <update id="update" parameterType="com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity">
+        UPDATE xy_product_area
+        SET
+            object_name = #{objectName},
+            belong_type = #{belongType},
+            icon_url = #{iconUrl},
+            map_ids = #{mapIds},
+            update_time = NOW()
+        WHERE area_id = #{areaId}
+    </update>
+
+    <!-- 删除区域 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM xy_product_area WHERE area_id = #{areaId}
+    </delete>
+
+</mapper>
