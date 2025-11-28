@@ -20,7 +20,7 @@ public class ProductAreaService {
     private ProductAreaMapper productAreaMapper;
 
     /**
-     * 查询列表 + 自动填 mapNames（map_cpa_name）
+     * 查询列表 + 自动补 mapNames
      */
     public List<ProductAreaEntity> list(ProductAreaEntity query) {
 
@@ -29,7 +29,6 @@ public class ProductAreaService {
         for (ProductAreaEntity item : list) {
 
             if (item.getMapIds() != null && !item.getMapIds().trim().isEmpty()) {
-
                 try {
                     List<Integer> ids = Arrays.stream(item.getMapIds().split(","))
                             .map(Integer::parseInt)
@@ -37,13 +36,14 @@ public class ProductAreaService {
 
                     List<String> names = productAreaMapper.getMapNamesByIds(ids);
 
-                    item.setMapNames(names.isEmpty() ? "未绑定" : String.join(", ", names));
+                    item.setMapNames(
+                            names.isEmpty() ? "未绑定" : String.join(", ", names)
+                    );
 
                 } catch (Exception e) {
-                    log.error("解析 mapIds 出错: {}", item.getMapIds(), e);
+                    log.error("mapIds 解析失败: {}", item.getMapIds(), e);
                     item.setMapNames("未绑定");
                 }
-
             } else {
                 item.setMapNames("未绑定");
             }
@@ -67,16 +67,13 @@ public class ProductAreaService {
 
     @Transactional
     public int delete(Integer areaId) {
-
         if (areaId == null) {
             throw new RuntimeException("areaId 不能为空");
         }
-
         int rows = productAreaMapper.delete(areaId);
         if (rows == 0) {
-            throw new RuntimeException("删除失败，未找到该记录");
+            throw new RuntimeException("删除失败，记录不存在");
         }
-
         return rows;
     }
 

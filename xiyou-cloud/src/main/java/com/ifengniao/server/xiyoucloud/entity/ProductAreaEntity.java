@@ -15,4 +15,5 @@ public class ProductAreaEntity {
     private String updateTime;
 
     private String mapNames;  // ⭐ 新增：用于显示地图名称
+    private String areaContent;  // ★ 新增 polygon
 }

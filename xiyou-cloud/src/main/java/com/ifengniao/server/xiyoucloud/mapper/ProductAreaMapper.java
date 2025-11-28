@@ -3,6 +3,7 @@ package com.ifengniao.server.xiyoucloud.mapper;
 import com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 @Mapper
@@ -16,6 +17,6 @@ public interface ProductAreaMapper {
 
     int delete(@Param("areaId") Integer areaId);
 
-    // ⭐ 新增：根据 mapIds 查地图名称
+    // ★ 新增：根据 mapIds 查询地图名称
     List<String> getMapNamesByIds(@Param("ids") List<Integer> ids);
 }

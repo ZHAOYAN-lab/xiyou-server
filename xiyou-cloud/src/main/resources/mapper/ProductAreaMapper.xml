@@ -11,6 +11,7 @@
             belong_type,
             icon_url,
             map_ids,
+            area_content,
             create_time,
             update_time
         )
@@ -19,6 +20,7 @@
             #{belongType},
             #{iconUrl},
             #{mapIds},
+            ST_GeomFromText(#{areaContent}, 0),
             NOW(),
             NOW()
         )
@@ -31,7 +33,8 @@
             object_name AS objectName,
             belong_type AS belongType,
             icon_url AS iconUrl,
-            map_ids AS MapIds,
+            map_ids AS mapIds,
+            area_content AS areaContent,
             create_time AS createTime,
             update_time AS updateTime
         FROM xy_product_area
@@ -46,6 +49,7 @@
             belong_type = #{belongType},
             icon_url = #{iconUrl},
             map_ids = #{mapIds},
+            area_content = ST_GeomFromText(#{areaContent}, 0),
             update_time = NOW()
         WHERE area_id = #{areaId}
     </update>
@@ -55,7 +59,7 @@
         DELETE FROM xy_product_area WHERE area_id = #{areaId}
     </delete>
 
-    <!-- ★★★★★ 关键：按 map_id 查询 map_cpa_name ★★★★★ -->
+    <!-- 根据 map_ids 查询 map 名称 -->
     <select id="getMapNamesByIds" parameterType="list" resultType="string">
         SELECT map_cpa_name
         FROM xy_map
