@@ -2,7 +2,7 @@ package com.ifengniao.server.xiyoucloud.mapper;
 
 import com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity;
 import org.apache.ibatis.annotations.Mapper;
-
+import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
@@ -14,5 +14,6 @@ public interface ProductAreaMapper {
 
     int update(ProductAreaEntity entity);
 
-    int delete(Integer areaId);
+    int delete(@Param("areaId") Integer areaId);  // ★ 关键修复点
 }
+

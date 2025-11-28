@@ -51,8 +51,9 @@
     </update>
 
     <!-- 删除区域 -->
-    <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM xy_product_area WHERE area_id = #{areaId}
-    </delete>
+    <delete id="delete" parameterType="java.lang.Integer">
+    DELETE FROM xy_product_area WHERE area_id = #{areaId}
+</delete>
+
 
 </mapper>
