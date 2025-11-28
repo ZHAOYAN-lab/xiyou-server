@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Slf4j  // ⭐ 加日志
+@Slf4j
 @Service
 public class ProductAreaService {
 
@@ -19,63 +20,67 @@ public class ProductAreaService {
     private ProductAreaMapper productAreaMapper;
 
     /**
-     * 查询列表
+     * 查询列表 + 自动填 mapNames（map_cpa_name）
      */
     public List<ProductAreaEntity> list(ProductAreaEntity query) {
-        return productAreaMapper.list(query);
+
+        List<ProductAreaEntity> list = productAreaMapper.list(query);
+
+        for (ProductAreaEntity item : list) {
+
+            if (item.getMapIds() != null && !item.getMapIds().trim().isEmpty()) {
+
+                try {
+                    List<Integer> ids = Arrays.stream(item.getMapIds().split(","))
+                            .map(Integer::parseInt)
+                            .collect(Collectors.toList());
+
+                    List<String> names = productAreaMapper.getMapNamesByIds(ids);
+
+                    item.setMapNames(names.isEmpty() ? "未绑定" : String.join(", ", names));
+
+                } catch (Exception e) {
+                    log.error("解析 mapIds 出错: {}", item.getMapIds(), e);
+                    item.setMapNames("未绑定");
+                }
+
+            } else {
+                item.setMapNames("未绑定");
+            }
+        }
+
+        return list;
     }
 
-    /**
-     * 新增
-     */
-    @Transactional  // ⭐ 加事务
+    @Transactional
     public int add(ProductAreaEntity entity) {
         entity.setCreateTime(LocalDateTime.now().toString());
         entity.setUpdateTime(LocalDateTime.now().toString());
         return productAreaMapper.add(entity);
     }
 
-    /**
-     * 修改
-     */
-    @Transactional  // ⭐ 加事务
+    @Transactional
     public int update(ProductAreaEntity entity) {
         entity.setUpdateTime(LocalDateTime.now().toString());
         return productAreaMapper.update(entity);
     }
 
-    /**
-     * 删除
-     */
-    @Transactional  // ⭐ 加事务
+    @Transactional
     public int delete(Integer areaId) {
-        log.info("🔴 Service: 准备删除 areaId = {}", areaId);
-        
+
         if (areaId == null) {
-            log.error("🔴 Service: areaId 是 null！");
             throw new RuntimeException("areaId 不能为空");
         }
-        
+
         int rows = productAreaMapper.delete(areaId);
-        log.info("🔴 Service: 删除影响行数 = {}", rows);
-        
         if (rows == 0) {
-            log.error("🔴 Service: 删除失败，未找到 areaId = {} 的记录", areaId);
             throw new RuntimeException("删除失败，未找到该记录");
         }
-        
-        log.info("🔴 Service: 删除成功！");
+
         return rows;
     }
 
-    /**
-     * 所属类型列表（这里写死三条数据，你可随时改成数据库查询）
-     */
     public List<String> getTypes() {
-        List<String> list = new ArrayList<>();
-        list.add("货物种类1");
-        list.add("货物种类2");
-        list.add("货物种类3");
-        return list;
+        return Arrays.asList("货物种类1", "货物种类2", "货物种类3");
     }
 }

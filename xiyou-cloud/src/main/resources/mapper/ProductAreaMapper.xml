@@ -31,7 +31,7 @@
             object_name AS objectName,
             belong_type AS belongType,
             icon_url AS iconUrl,
-            map_ids AS mapIds,
+            map_ids AS MapIds,
             create_time AS createTime,
             update_time AS updateTime
         FROM xy_product_area
@@ -52,8 +52,17 @@
 
     <!-- 删除区域 -->
     <delete id="delete" parameterType="java.lang.Integer">
-    DELETE FROM xy_product_area WHERE area_id = #{areaId}
-</delete>
+        DELETE FROM xy_product_area WHERE area_id = #{areaId}
+    </delete>
 
+    <!-- ★★★★★ 关键：按 map_id 查询 map_cpa_name ★★★★★ -->
+    <select id="getMapNamesByIds" parameterType="list" resultType="string">
+        SELECT map_cpa_name
+        FROM xy_map
+        WHERE map_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
 </mapper>

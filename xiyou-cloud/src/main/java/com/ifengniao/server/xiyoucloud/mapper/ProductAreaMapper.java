@@ -14,6 +14,8 @@ public interface ProductAreaMapper {
 
     int update(ProductAreaEntity entity);
 
-    int delete(@Param("areaId") Integer areaId);  // ★ 关键修复点
-}
+    int delete(@Param("areaId") Integer areaId);
 
+    // ⭐ 新增：根据 mapIds 查地图名称
+    List<String> getMapNamesByIds(@Param("ids") List<Integer> ids);
+}

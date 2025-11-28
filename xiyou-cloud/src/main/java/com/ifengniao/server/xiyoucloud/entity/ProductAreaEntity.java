@@ -10,6 +10,9 @@ public class ProductAreaEntity {
     private String belongType;
     private String iconUrl;
     private String mapIds;
+
     private String createTime;
     private String updateTime;
+
+    private String mapNames;  // ⭐ 新增：用于显示地图名称
 }
