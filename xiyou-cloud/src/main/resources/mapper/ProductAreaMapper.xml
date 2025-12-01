@@ -34,7 +34,7 @@
             belong_type AS belongType,
             icon_url AS iconUrl,
             map_ids AS mapIds,
-            area_content AS areaContent,
+            ST_AsText(area_content) AS areaContent,   <!-- ★★ 修复关键点 -->
             create_time AS createTime,
             update_time AS updateTime
         FROM xy_product_area
