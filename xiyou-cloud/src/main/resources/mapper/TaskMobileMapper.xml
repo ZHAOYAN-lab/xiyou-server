@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ifengniao.server.xiyoucloud.mapper.TaskMobileMapper">
+
+    <select id="getMyTask" resultType="com.ifengniao.server.xiyoucloud.dto.MobileTaskDto">
+        SELECT
+            t.task_id AS taskId,
+            t.task_name AS taskName,
+
+            -- 任务绑定人员/对象名称
+            t.object_name AS objectName,
+
+            -- 楼层地图
+            t.map_id AS mapId,
+
+            -- 商品区域ID
+            t.area_id AS areaId,
+
+            -- 区域坐标点
+            pa.area_content AS areaContent
+
+        FROM xy_task t
+        LEFT JOIN xy_product_area pa ON pa.area_id = t.area_id
+        
+        WHERE t.object_name = #{objectName}
+          AND t.status = '执行中'      -- 可按你原来的任务状态字段改
+        LIMIT 1
+    </select>
+
+</mapper>

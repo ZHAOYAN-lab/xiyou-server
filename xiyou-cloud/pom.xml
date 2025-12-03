@@ -110,6 +110,11 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.20</version>
         </dependency>
+        <dependency>
+    <groupId>org.locationtech.jts</groupId>
+    <artifactId>jts-core</artifactId>
+    <version>1.19.0</version>
+</dependency>
     </dependencies>
 
     <build>

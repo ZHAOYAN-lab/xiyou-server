@@ -11,6 +11,8 @@ import com.ifengniao.common.config.influxdb2.EnableInflux2DS;
 import com.ifengniao.common.config.openapi.EnableOpenapiConfig;
 import com.ifengniao.common.config.postgresql.jpa.EnablePgSQLDS;
 import com.ifengniao.common.notify.mail.EnableNotifyMail;
+
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
@@ -31,6 +33,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableToken
 @EnableNotifyMail
 @Import(value = {ThreadPoolConfig.class})
+
+// ⭐⭐⭐ 你必须新增这一行 ⭐⭐⭐
+@MapperScan("com.ifengniao.server.xiyoucloud.mapper")
+
 public class XiyouCloudApplication {
 
     public static void main(String[] args) {
