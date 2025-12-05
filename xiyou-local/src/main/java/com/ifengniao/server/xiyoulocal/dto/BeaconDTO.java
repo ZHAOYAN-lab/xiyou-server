@@ -14,7 +14,7 @@ import java.util.Map;
 public class BeaconDTO {
     private Integer beaconId;
     private String beaconMac;
-    private String beaconUniqueId;
+    private String beaconUniqueId; // ❗保留用于兼容，但最终 = beaconMac
     private String beaconX;
     private String beaconY;
     private String beaconZ;
@@ -39,20 +39,16 @@ public class BeaconDTO {
     private String beaconZoneName;
 
     public BeaconDTO(String mac, CleBeaconDTO cleBeaconDTO) {
-        // ✅ uniqueId 优先
-        this.beaconUniqueId = cleBeaconDTO.getUniqueId() == null ? "" : cleBeaconDTO.getUniqueId();
 
-        if (this.beaconUniqueId != null && !this.beaconUniqueId.isEmpty()) {
-            // 手机广播（用 uniqueId 入库）
-            this.beaconMac = this.beaconUniqueId;
-        } else if (cleBeaconDTO.getUserData() != null && cleBeaconDTO.getUserData().get("mac") != null) {
-            // ✅ CLE JSON 已经输出 mac，直接用它
+        // ❗uniqueId 不再使用，直接同步为 mac
+        this.beaconUniqueId = mac;
+
+        // MAC 使用 CLE 的 userData.mac > 传入 mac
+        if (cleBeaconDTO.getUserData() != null &&
+            cleBeaconDTO.getUserData().get("mac") != null) {
             this.beaconMac = cleBeaconDTO.getUserData().get("mac").toString();
-        } else if (mac != null && !mac.isEmpty()) {
-            // ✅ 方法参数兜底
-            this.beaconMac = mac;
         } else {
-            this.beaconMac = "";
+            this.beaconMac = mac == null ? "" : mac;
         }
 
         this.beaconX = cleBeaconDTO.getX() == null ? "" : String.format("%.02f", cleBeaconDTO.getX());

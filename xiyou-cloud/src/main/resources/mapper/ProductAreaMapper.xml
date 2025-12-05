@@ -19,27 +19,40 @@
             #{objectName},
             #{belongType},
             #{iconUrl},
-            #{mapIds},
+            string_to_array(#{mapIds}, ',')::integer[],  <!-- 正确写法 -->
             ST_GeomFromText(#{areaContent}, 0),
             NOW(),
             NOW()
         )
     </insert>
 
+
     <!-- 查询区域列表 -->
     <select id="list" resultType="com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity">
         SELECT
-            area_id AS areaId,
-            object_name AS objectName,
-            belong_type AS belongType,
-            icon_url AS iconUrl,
-            map_ids AS mapIds,
-            ST_AsText(area_content) AS areaContent,   <!-- ★★ 修复关键点 -->
-            create_time AS createTime,
-            update_time AS updateTime
-        FROM xy_product_area
-        ORDER BY area_id DESC
+            pa.area_id AS areaId,
+            pa.object_name AS objectName,
+            pa.belong_type AS belongType,
+            pa.icon_url AS iconUrl,
+
+            -- ★ 把 {1,2} → "1,2"
+            trim(both '{}' from pa.map_ids::text) AS mapIds,
+
+            ST_AsText(pa.area_content) AS areaContent,
+            pa.create_time AS createTime,
+            pa.update_time AS updateTime,
+
+            -- ★ 查询地图名称
+            (
+                SELECT string_agg(m.map_cpa_name, ',')
+                FROM xy_map m
+                WHERE m.map_id = ANY(pa.map_ids)
+            ) AS mapNames
+
+        FROM xy_product_area pa
+        ORDER BY pa.area_id DESC
     </select>
+
 
     <!-- 修改区域 -->
     <update id="update" parameterType="com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity">
@@ -48,16 +61,18 @@
             object_name = #{objectName},
             belong_type = #{belongType},
             icon_url = #{iconUrl},
-            map_ids = #{mapIds},
+            map_ids = string_to_array(#{mapIds}, ',')::integer[],
             area_content = ST_GeomFromText(#{areaContent}, 0),
             update_time = NOW()
         WHERE area_id = #{areaId}
     </update>
 
+
     <!-- 删除区域 -->
     <delete id="delete" parameterType="java.lang.Integer">
         DELETE FROM xy_product_area WHERE area_id = #{areaId}
     </delete>
+
 
     <!-- 根据 map_ids 查询 map 名称 -->
     <select id="getMapNamesByIds" parameterType="list" resultType="string">

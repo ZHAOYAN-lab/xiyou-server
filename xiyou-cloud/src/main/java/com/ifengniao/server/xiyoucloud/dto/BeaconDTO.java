@@ -18,7 +18,7 @@ import java.util.List;
 public class BeaconDTO {
     private Integer beaconId;
     private String beaconMac;
-    private String beaconUniqueId;   // ✅ 新增字段（数据库已添加）
+    private String beaconUniqueId;   // ❗保留字段用于兼容旧前端，但不入库
     private String beaconX;
     private String beaconY;
     private String beaconZ;
@@ -101,9 +101,7 @@ public class BeaconDTO {
     public BeaconDTO(BeaconEntity beaconEntity) {
         this.beaconId = beaconEntity.getBeaconId();
         this.beaconMac = beaconEntity.getBeaconMac();
-
-        // ✅ 确保 uniqueId 和 mac 同步
-        this.beaconUniqueId = this.beaconMac;
+        this.beaconUniqueId = this.beaconMac; // ❗uniqueId = mac（兼容使用）
 
         this.beaconX = beaconEntity.getBeaconX();
         this.beaconY = beaconEntity.getBeaconY();
@@ -128,6 +126,7 @@ public class BeaconDTO {
         this.beaconMapId = beaconEntity.getBeaconMapId();
         this.beaconZoneId = beaconEntity.getBeaconZoneId();
         this.beaconZoneName = beaconEntity.getBeaconZoneName();
+
         if (beaconEntity.getBeaconLocationObject() != null) {
             this.beaconLocationObject = new LocationObjectDTO(beaconEntity.getBeaconLocationObject());
         }
@@ -136,9 +135,7 @@ public class BeaconDTO {
     public BeaconDTO(SimpleBeaconEntity beaconEntity) {
         this.beaconId = beaconEntity.getBeaconId();
         this.beaconMac = beaconEntity.getBeaconMac();
-
-        // ✅ 确保 uniqueId 和 mac 同步
-        this.beaconUniqueId = this.beaconMac;
+        this.beaconUniqueId = this.beaconMac; // ❗uniqueId = mac
 
         this.beaconX = beaconEntity.getBeaconX();
         this.beaconY = beaconEntity.getBeaconY();
@@ -163,6 +160,7 @@ public class BeaconDTO {
         this.beaconMapId = beaconEntity.getBeaconMapId();
         this.beaconZoneId = beaconEntity.getBeaconZoneId();
         this.beaconZoneName = beaconEntity.getBeaconZoneName();
+
         if (beaconEntity.getBeaconLocationObject() != null) {
             this.beaconLocationObject = new LocationObjectDTO(beaconEntity.getBeaconLocationObject());
         }

@@ -25,10 +25,7 @@ public class SimpleBeaconEntity {
     @Column(name = "beacon_mac")
     private String beaconMac;
 
-    // ✅ 新增字段：beacon_unique_id
-    @Basic
-    @Column(name = "beacon_unique_id")
-    private String beaconUniqueId;
+    // beacon_unique_id 已删除，不再保留任何相关代码
 
     @Basic
     @Column(name = "beacon_x")
@@ -133,7 +130,7 @@ public class SimpleBeaconEntity {
     public SimpleBeaconEntity init() {
         this.beaconId = null;
         this.beaconMac = "";
-        this.beaconUniqueId = ""; // ✅ 初始化 uniqueId
+        // 已删除 beaconUniqueId，不再初始化
         this.beaconX = "";
         this.beaconY = "";
         this.beaconZ = "";
