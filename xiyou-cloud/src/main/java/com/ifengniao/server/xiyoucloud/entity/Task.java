@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
 /**
- * 任务实体类（带商品区域 areaId / areaName 字段）
+ * 任务实体类
  * 对应数据库表：xy_task
  */
 @TableName("xy_task")
@@ -25,17 +25,22 @@ public class Task {
     @JsonProperty("objectName")
     private String objectName;
 
-    /** 任务类型，例如：取货 / 送货 */
+    /** 任务类型（取货 / 送货） */
     @TableField("task_type")
     @JsonProperty("taskType")
     private String taskType;
+
+    /** ★ 任务内容 / 任务说明（关键） */
+    @TableField("task_desc")
+    @JsonProperty("taskDesc")
+    private String taskDesc;
 
     /** 当前状态：待派发 / 已派发 / 执行中 */
     @TableField("status")
     @JsonProperty("status")
     private String status;
 
-    /** 派发员工（多个员工用逗号分隔："张三,李四"） */
+    /** 派发员工（多个员工用逗号分隔） */
     @TableField("assigned_to")
     @JsonProperty("assignedTo")
     private String assignedTo;
@@ -43,13 +48,13 @@ public class Task {
     /** 创建时间 */
     @TableField("create_time")
     @JsonProperty("createTime")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /** 更新时间 */
     @TableField("update_time")
     @JsonProperty("updateTime")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /** 是否删除 0=正常 1=删除 */
@@ -57,7 +62,7 @@ public class Task {
     @JsonProperty("isDeleted")
     private Integer isDeleted;
 
-    /** 商品区域 ID（来自商品区域设置） */
+    /** 商品区域 ID */
     @TableField("area_id")
     @JsonProperty("areaId")
     private Integer areaId;
@@ -67,8 +72,7 @@ public class Task {
     @JsonProperty("areaName")
     private String areaName;
 
-
-    /* ---------------------- Getter / Setter ---------------------- */
+    /* ---------- Getter / Setter ---------- */
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -78,6 +82,9 @@ public class Task {
 
     public String getTaskType() { return taskType; }
     public void setTaskType(String taskType) { this.taskType = taskType; }
+
+    public String getTaskDesc() { return taskDesc; }
+    public void setTaskDesc(String taskDesc) { this.taskDesc = taskDesc; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
@@ -100,13 +107,13 @@ public class Task {
     public String getAreaName() { return areaName; }
     public void setAreaName(String areaName) { this.areaName = areaName; }
 
-
     @Override
     public String toString() {
         return "Task{" +
                 "id=" + id +
                 ", objectName='" + objectName + '\'' +
                 ", taskType='" + taskType + '\'' +
+                ", taskDesc='" + taskDesc + '\'' +
                 ", status='" + status + '\'' +
                 ", assignedTo='" + assignedTo + '\'' +
                 ", areaId=" + areaId +

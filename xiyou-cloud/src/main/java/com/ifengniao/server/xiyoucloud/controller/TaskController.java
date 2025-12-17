@@ -19,10 +19,7 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-
-    /*-----------------------------------------
-     * 任务列表（已改：移除软删除过滤 is_deleted=0）
-     -----------------------------------------*/
+    /* 任务列表 */
     @GetMapping("/list")
     public Result<Map<String, Object>> getList(
             @RequestParam(defaultValue = "1") Integer page,
@@ -36,7 +33,6 @@ public class TaskController {
             query.like("object_name", objectName);
         }
 
-        // ★ 删除软删除过滤逻辑，物理删除后也能正常分页
         query.orderByDesc("create_time");
 
         Page<Task> resultPage = taskService.page(pageParam, query);
@@ -46,18 +42,15 @@ public class TaskController {
             map.put("id", task.getId());
             map.put("objectName", task.getObjectName());
             map.put("taskType", task.getTaskType());
+            map.put("taskDesc", task.getTaskDesc()); // ★ 关键
             map.put("status", task.getStatus());
             map.put("createTime", task.getCreateTime());
-
-            // 商品区域
             map.put("areaId", task.getAreaId());
             map.put("areaName", task.getAreaName());
 
-            // 派发员工
-            String assignedStr = task.getAssignedTo();
             List<String> assignedList = new ArrayList<>();
-            if (assignedStr != null && !assignedStr.isEmpty()) {
-                assignedList = Arrays.asList(assignedStr.split(","));
+            if (task.getAssignedTo() != null && !task.getAssignedTo().isEmpty()) {
+                assignedList = Arrays.asList(task.getAssignedTo().split(","));
             }
             map.put("assignedTo", assignedList);
 
@@ -71,10 +64,7 @@ public class TaskController {
         return Result.success(detail);
     }
 
-
-    /*-----------------------------------------
-     * 新增任务
-     -----------------------------------------*/
+    /* 新增任务 */
     @PostMapping("/add")
     public Result<String> addTask(@RequestBody Task task) {
 
@@ -88,23 +78,7 @@ public class TaskController {
         return Result.success("新增成功");
     }
 
-
-    /*-----------------------------------------
-     * 修改任务
-     -----------------------------------------*/
-    @PostMapping("/update")
-    public Result<String> update(@RequestBody Task task) {
-
-        task.setUpdateTime(new Date());
-        taskService.updateById(task);
-
-        return Result.success("修改成功");
-    }
-
-
-    /*-----------------------------------------
-     * 派发任务
-     -----------------------------------------*/
+    /* 派发 */
     @PostMapping("/dispatch")
     public Result<String> dispatchTask(
             @RequestParam("taskId") Long taskId,
@@ -114,22 +88,18 @@ public class TaskController {
         if (task == null) return Result.error("任务不存在");
 
         task.setStatus("已派发");
+        task.setAssignedTo(
+                employees != null && !employees.isEmpty()
+                        ? String.join(",", employees)
+                        : ""
+        );
         task.setUpdateTime(new Date());
-
-        if (employees != null && !employees.isEmpty()) {
-            task.setAssignedTo(String.join(",", employees));
-        } else {
-            task.setAssignedTo("");
-        }
 
         taskService.updateById(task);
         return Result.success("派发成功");
     }
 
-
-    /*-----------------------------------------
-     * 取消任务
-     -----------------------------------------*/
+    /* 取消 */
     @PostMapping("/cancel")
     public Result<String> cancelTask(@RequestParam("taskId") Long taskId) {
 
@@ -139,37 +109,27 @@ public class TaskController {
         task.setStatus("待派发");
         task.setAssignedTo("");
         task.setUpdateTime(new Date());
-        taskService.updateById(task);
 
+        taskService.updateById(task);
         return Result.success("取消成功");
     }
 
-
-    /*-----------------------------------------
-     * 删除任务（物理删除）
-     -----------------------------------------*/
+    /* 删除（强校验） */
     @PostMapping("/delete")
     public Result<String> deleteTask(@RequestParam("id") Long id) {
-
-        Task task = taskService.getById(id);
-        if (task == null) return Result.error("任务不存在");
-
-        // ★ 改为物理删除：直接 removeById
-        taskService.removeById(id);
-
-        return Result.success("删除成功");
+        try {
+            taskService.deleteTaskWithStatusCheck(id);
+            return Result.success("删除成功");
+        } catch (RuntimeException e) {
+            return Result.error(e.getMessage());
+        }
     }
 
-
-
-    /*-----------------------------------------
-     * 统一返回结构
-     -----------------------------------------*/
+    /* 统一返回 */
     public static class Result<T> {
         private String code;
         private String msg;
         private T detail;
-        private String errorDetail;
 
         public static <T> Result<T> success(T detail) {
             Result<T> r = new Result<>();
@@ -186,8 +146,8 @@ public class TaskController {
             return r;
         }
 
-        public T getDetail() { return detail; }
-        public String getMsg() { return msg; }
         public String getCode() { return code; }
+        public String getMsg() { return msg; }
+        public T getDetail() { return detail; }
     }
 }

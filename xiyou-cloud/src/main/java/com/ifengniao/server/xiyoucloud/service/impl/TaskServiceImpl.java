@@ -6,10 +6,20 @@ import com.ifengniao.server.xiyoucloud.mapper.TaskMapper;
 import com.ifengniao.server.xiyoucloud.service.TaskService;
 import org.springframework.stereotype.Service;
 
-/**
- * 任务 Service 实现类
- */
 @Service
 public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task> implements TaskService {
-    // 继承 ServiceImpl，自动实现基础方法
+
+    @Override
+    public void deleteTaskWithStatusCheck(Long id) {
+        Task task = getById(id);
+        if (task == null) {
+            throw new RuntimeException("任务不存在");
+        }
+
+        if ("已派发".equals(task.getStatus()) || "执行中".equals(task.getStatus())) {
+            throw new RuntimeException("任务已派发或执行中，必须先取消后才能删除");
+        }
+
+        removeById(id);
+    }
 }
