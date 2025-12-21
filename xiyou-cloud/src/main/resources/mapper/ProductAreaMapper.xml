@@ -19,13 +19,12 @@
             #{objectName},
             #{belongType},
             #{iconUrl},
-            string_to_array(#{mapIds}, ',')::integer[],  <!-- 正确写法 -->
+            string_to_array(#{mapIds}, ',')::integer[],
             ST_GeomFromText(#{areaContent}, 0),
             NOW(),
             NOW()
         )
     </insert>
-
 
     <!-- 查询区域列表 -->
     <select id="list" resultType="com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity">
@@ -53,6 +52,27 @@
         ORDER BY pa.area_id DESC
     </select>
 
+    <!-- ✅【新增】根据 areaId 查询区域详情（H5 使用） -->
+    <select id="getById" parameterType="int"
+            resultType="com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity">
+        SELECT
+            pa.area_id AS areaId,
+            pa.object_name AS objectName,
+            pa.belong_type AS belongType,
+            pa.icon_url AS iconUrl,
+
+            -- map_ids 转成 "1,2"
+            trim(both '{}' from pa.map_ids::text) AS mapIds,
+
+            -- ★ 核心：返回 POLYGON((...))
+            ST_AsText(pa.area_content) AS areaContent,
+
+            pa.create_time AS createTime,
+            pa.update_time AS updateTime
+        FROM xy_product_area pa
+        WHERE pa.area_id = #{areaId}
+        LIMIT 1
+    </select>
 
     <!-- 修改区域 -->
     <update id="update" parameterType="com.ifengniao.server.xiyoucloud.entity.ProductAreaEntity">
@@ -67,12 +87,10 @@
         WHERE area_id = #{areaId}
     </update>
 
-
     <!-- 删除区域 -->
     <delete id="delete" parameterType="java.lang.Integer">
         DELETE FROM xy_product_area WHERE area_id = #{areaId}
     </delete>
-
 
     <!-- 根据 map_ids 查询 map 名称 -->
     <select id="getMapNamesByIds" parameterType="list" resultType="string">

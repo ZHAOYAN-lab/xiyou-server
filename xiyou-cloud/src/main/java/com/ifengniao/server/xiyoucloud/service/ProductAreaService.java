@@ -52,6 +52,23 @@ public class ProductAreaService {
         return list;
     }
 
+    /**
+     * ✅【新增】根据 areaId 查询商品区域详情（H5 使用）
+     */
+    public ProductAreaEntity getById(Integer areaId) {
+        if (areaId == null) {
+            throw new RuntimeException("areaId 不能为空");
+        }
+
+        ProductAreaEntity entity = productAreaMapper.getById(areaId);
+
+        if (entity == null) {
+            throw new RuntimeException("商品区域不存在，areaId=" + areaId);
+        }
+
+        return entity;
+    }
+
     @Transactional
     public int add(ProductAreaEntity entity) {
         entity.setCreateTime(LocalDateTime.now().toString());

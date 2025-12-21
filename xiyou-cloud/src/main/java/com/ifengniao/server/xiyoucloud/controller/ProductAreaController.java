@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(description = "商品区域设置接口", name = "商品区域设置接口")
 @RestController
 @RequestMapping("/ifengniao/cloud/server/xiyou/productArea")
@@ -49,5 +47,15 @@ public class ProductAreaController {
     @GetMapping("/types")
     public ResultMsg types() {
         return Resp.exec(() -> productAreaService.getTypes());
+    }
+
+    /**
+     * ✅【新增】根据 areaId 查询商品区域详情（H5 使用）
+     * 返回内容包含 areaContent（POLYGON((...))）
+     */
+    @Operation(summary = "根据ID查询商品区域详情")
+    @GetMapping("/getById")
+    public ResultMsg getById(@RequestParam("areaId") Integer areaId) {
+        return Resp.exec(() -> productAreaService.getById(areaId));
     }
 }
