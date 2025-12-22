@@ -58,11 +58,24 @@ public class TaskController {
             map.put("id", task.getId());
             map.put("objectName", task.getObjectName());
             map.put("taskType", task.getTaskType());
+
+            // 旧字段仍返回（兼容）
             map.put("taskDesc", task.getTaskDesc());
+
+            // ✅ 新字段：备注
+            map.put("remark", task.getRemark());
+
             map.put("status", task.getStatus());
             map.put("createTime", task.getCreateTime());
             map.put("areaId", task.getAreaId());
             map.put("areaName", task.getAreaName());
+
+            // ✅ 新增：开始/结束配置
+            map.put("startFromCurrent", task.getStartFromCurrent());
+            map.put("startAreaId", task.getStartAreaId());
+            map.put("startAreaName", task.getStartAreaName());
+            map.put("endAreaId", task.getEndAreaId());
+            map.put("endAreaName", task.getEndAreaName());
 
             List<String> assignedList = new ArrayList<>();
             if (task.getAssignedTo() != null && !task.getAssignedTo().isEmpty()) {
@@ -95,10 +108,26 @@ public class TaskController {
             map.put("id", task.getId());
             map.put("objectName", task.getObjectName());
             map.put("taskType", task.getTaskType());
+
+            // 旧字段兼容
             map.put("taskDesc", task.getTaskDesc());
+
+            // ✅ 新字段
+            map.put("remark", task.getRemark());
+
             map.put("status", task.getStatus());
+
+            // 旧区域字段（兼容）
             map.put("areaId", task.getAreaId());
             map.put("areaName", task.getAreaName());
+
+            // ✅ 新增：开始/结束配置
+            map.put("startFromCurrent", task.getStartFromCurrent());
+            map.put("startAreaId", task.getStartAreaId());
+            map.put("startAreaName", task.getStartAreaName());
+            map.put("endAreaId", task.getEndAreaId());
+            map.put("endAreaName", task.getEndAreaName());
+
             return map;
         }).collect(Collectors.toList());
 
@@ -114,6 +143,29 @@ public class TaskController {
         task.setIsDeleted(0);
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
+
+        // ✅ 默认：从当前位置开始（你要的“导航默认当前位置开始”）
+        if (task.getStartFromCurrent() == null) {
+            task.setStartFromCurrent(1);
+        }
+
+        // ✅ 兼容：旧前端还在传 taskDesc，但新前端要用 remark
+        if ((task.getRemark() == null || task.getRemark().trim().isEmpty())
+                && task.getTaskDesc() != null && !task.getTaskDesc().trim().isEmpty()) {
+            task.setRemark(task.getTaskDesc());
+        }
+
+        // ✅ 兼容：旧逻辑只有 areaId/areaName（单区域）
+        // 现在新逻辑用 endAreaId/endAreaName。若没传 endAreaId，则用 areaId 兜底
+        if (task.getEndAreaId() == null && task.getAreaId() != null) {
+            task.setEndAreaId(task.getAreaId());
+            task.setEndAreaName(task.getAreaName());
+        }
+
+        // ✅ 再兜底一次：如果 endAreaId 还是空，直接拒绝（避免生成无终点任务）
+        if (task.getEndAreaId() == null) {
+            return Result.error("结束区域不能为空");
+        }
 
         taskService.save(task);
         return Result.success("新增成功");
@@ -138,7 +190,7 @@ public class TaskController {
         return Result.success("派发成功");
     }
 
-    /* ================= 取消派发（admin） ★★★ 新增 ★★★ ================= */
+    /* ================= 取消派发（admin） ================= */
     @PostMapping("/cancel")
     public Result<String> cancel(@RequestParam("taskId") Integer taskId) {
 
@@ -147,7 +199,6 @@ public class TaskController {
             return Result.error("任务不存在");
         }
 
-        // 只有「已派发」允许取消
         if (!"已派发".equals(task.getStatus())) {
             return Result.error("当前任务状态不可取消");
         }
@@ -187,7 +238,7 @@ public class TaskController {
         return Result.success("任务已进入执行中");
     }
 
-    /* ================= H5：已到达 ================= */
+    /* ================= H5：已到达（你手动点） ================= */
     @PostMapping("/arrived")
     public Result<String> arrived(@RequestParam("taskId") Integer taskId) {
 
