@@ -34,12 +34,22 @@ public class AlarmDTO {
     }
 
     public AlarmDTO(AlarmEntity alarmEntity) {
-        this.alarmId = alarmEntity.getAlarmId();
-        this.alarmType = alarmEntity.getAlarmType();
-        this.alarmStatus = alarmEntity.getAlarmStatus();
-        this.alarmTime = alarmEntity.getAlarmTime();
-        this.alarmLocationObject = new LocationObjectWithBeaconDTO(alarmEntity.getAlarmLocationObject());
+    this.alarmId = alarmEntity.getAlarmId();
+    this.alarmType = alarmEntity.getAlarmType();
+    this.alarmStatus = alarmEntity.getAlarmStatus();
+    this.alarmTime = alarmEntity.getAlarmTime();
+
+    this.alarmLocationObject =
+            new LocationObjectWithBeaconDTO(alarmEntity.getAlarmLocationObject());
+
+    if (alarmEntity.getAlarmFence() != null) {
         this.alarmFence = new FenceWithoutMapDTO(alarmEntity.getAlarmFence());
-        this.alarmMap = new MapWithoutBaseStationDTO(alarmEntity.getAlarmMap());
+    } else {
+        this.alarmFence = null;
     }
+
+    this.alarmMap =
+            new MapWithoutBaseStationDTO(alarmEntity.getAlarmMap());
+}
+
 }
