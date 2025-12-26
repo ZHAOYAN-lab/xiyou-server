@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "xy_user", schema = "public", catalog = "xiyou")
 @NoArgsConstructor
@@ -29,5 +31,20 @@ public class UserEntity {
     @Basic
     @Column(name = "user_phone")
     private String userPhone;
+    @Basic
+    @Column(name = "user_department")
+    private String userDepartment;
+    @Basic
+    @Column(name = "user_level")
+    private String userLevel;
+    @Basic
+    @Column(name = "employee_name")
+    private String employeeName;
+    @Basic
+    @Column(name = "user_remark")
+    private String userRemark;
+    @Basic
+    @Column(name = "create_time")
+    private Date createTime;
 
 }
